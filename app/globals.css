@@ -1,26 +1,216 @@
 @import "tailwindcss";
 
+/* ============================================================
+   Design tokens — Tailwind v4 CSS-first configuration
+   ============================================================ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+
+  --primary: 221 83% 53%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222 47% 11%;
+
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%;
+
+  --accent: 210 40% 96%;
+  --accent-foreground: 222 47% 11%;
+
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 221 83% 53%;
+
+  --radius: 0.5rem;
+  --sidebar-width: 240px;
 }
 
+.dark {
+  --background: 224 20% 8%;
+  --foreground: 213 31% 95%;
+  --card: 224 20% 11%;
+  --card-foreground: 213 31% 95%;
+  --popover: 224 20% 11%;
+  --popover-foreground: 213 31% 95%;
+  --primary: 217 91% 62%;
+  --primary-foreground: 224 20% 8%;
+  --secondary: 224 20% 16%;
+  --secondary-foreground: 213 31% 95%;
+  --muted: 224 20% 16%;
+  --muted-foreground: 215 16% 55%;
+  --accent: 224 20% 18%;
+  --accent-foreground: 213 31% 95%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 224 20% 18%;
+  --input: 224 20% 16%;
+  --ring: 217 91% 62%;
+}
+
+/* ============================================================
+   Tailwind v4 theme — maps CSS vars to utility classes
+   ============================================================ */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background:           hsl(var(--background));
+  --color-foreground:           hsl(var(--foreground));
+  --color-card:                 hsl(var(--card));
+  --color-card-foreground:      hsl(var(--card-foreground));
+  --color-popover:              hsl(var(--popover));
+  --color-popover-foreground:   hsl(var(--popover-foreground));
+  --color-primary:              hsl(var(--primary));
+  --color-primary-foreground:   hsl(var(--primary-foreground));
+  --color-secondary:            hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted:                hsl(var(--muted));
+  --color-muted-foreground:     hsl(var(--muted-foreground));
+  --color-accent:               hsl(var(--accent));
+  --color-accent-foreground:    hsl(var(--accent-foreground));
+  --color-destructive:          hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border:               hsl(var(--border));
+  --color-input:                hsl(var(--input));
+  --color-ring:                 hsl(var(--ring));
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) + 8px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ============================================================
+   Base styles
+   ============================================================ */
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    letter-spacing: -0.02em;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ============================================================
+   Radix UI animation keyframes
+   Used by shadcn-style dialog, select, dropdown, etc.
+   ============================================================ */
+@keyframes accordion-down {
+  from { height: 0; }
+  to { height: var(--radix-accordion-content-height); }
+}
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); }
+  to { height: 0; }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes zoom-in-95 {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes zoom-out-95 {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.95); }
+}
+@keyframes slide-in-from-top-2 {
+  from { transform: translateY(-8px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes slide-in-from-bottom-2 {
+  from { transform: translateY(8px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes slide-in-from-left-half {
+  from { transform: translate(-50%, -50%) translateX(-8px); opacity: 0; }
+  to { transform: translate(-50%, -50%); opacity: 1; }
+}
+@keyframes slide-out-to-left-half {
+  from { transform: translate(-50%, -50%); opacity: 1; }
+  to { transform: translate(-50%, -50%) translateX(-8px); opacity: 0; }
+}
+
+/* Tailwind v4 animation utilities for Radix components */
+@layer utilities {
+  .animate-in {
+    animation-duration: 200ms;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    animation-fill-mode: both;
+  }
+  .animate-out {
+    animation-duration: 150ms;
+    animation-timing-function: ease-in;
+    animation-fill-mode: both;
+  }
+  .fade-in-0 {
+    animation-name: fade-in;
+  }
+  .fade-out-0 {
+    animation-name: fade-out;
+  }
+  .zoom-in-95 {
+    animation-name: zoom-in-95;
+  }
+  .zoom-out-95 {
+    animation-name: zoom-out-95;
+  }
+  .slide-in-from-top-2 {
+    animation-name: slide-in-from-top-2;
+  }
+  .slide-in-from-bottom-2 {
+    animation-name: slide-in-from-bottom-2;
+  }
+  .slide-in-from-left-1\/2 {
+    animation-name: slide-in-from-left-half;
+  }
+  .slide-out-to-left-1\/2 {
+    animation-name: slide-out-to-left-half;
+  }
+  /* data-state driven triggers for Radix */
+  [data-state="open"].animate-in { animation-play-state: running; }
+  [data-state="closed"].animate-out { animation-play-state: running; }
+}
+
+/* ============================================================
+   Misc
+   ============================================================ */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Safe area padding for iOS PWA installed to home screen */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* ring-offset-background utility */
+.ring-offset-background {
+  --tw-ring-offset-color: hsl(var(--background));
 }
