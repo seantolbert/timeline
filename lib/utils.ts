@@ -65,6 +65,8 @@ export function filterAndSortTasks(tasks: Task[], filters: TaskFilters): Task[] 
   const dir = filters.sortDir === "asc" ? 1 : -1;
   result.sort((a, b) => {
     switch (filters.sortBy) {
+      case "order":
+        return (a.order - b.order) * dir;
       case "due_date": {
         if (!a.due_date && !b.due_date) return 0;
         if (!a.due_date) return 1;

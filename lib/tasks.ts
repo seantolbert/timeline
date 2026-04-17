@@ -6,7 +6,7 @@ export async function getTasks(): Promise<Task[]> {
   const { data, error } = await supabase
     .from("tasks")
     .select("*")
-    .order("created_at", { ascending: false });
+    .order("order", { ascending: true });
 
   if (error) throw error;
   return (data ?? []) as Task[];
@@ -14,9 +14,21 @@ export async function getTasks(): Promise<Task[]> {
 
 export async function createTask(input: CreateTaskInput): Promise<Task> {
   const supabase = createClient();
+
+  // Place new tasks at the top (order = current min - 1, floor at 0)
+  const { data: existing } = await supabase
+    .from("tasks")
+    .select("order")
+    .order("order", { ascending: true })
+    .limit(1);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const minOrder = (existing?.[0] as any)?.order ?? 1000;
+  const newOrder = Math.max(0, minOrder - 1);
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase.from("tasks") as any)
-    .insert(input)
+    .insert({ ...input, order: newOrder })
     .select()
     .single();
 
@@ -48,4 +60,21 @@ export async function toggleTaskComplete(task: Task): Promise<Task> {
     completed: !task.completed,
     status: !task.completed ? "done" : "todo",
   });
+}
+
+/**
+ * Persist a new order for a reordered list.
+ * Receives the full ordered array and writes each task's new index.
+ * Fires all updates in parallel for speed.
+ */
+export async function reorderTasks(ordered: Task[]): Promise<void> {
+  const supabase = createClient();
+  await Promise.all(
+    ordered.map((task, index) =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (supabase.from("tasks") as any)
+        .update({ order: index })
+        .eq("id", task.id)
+    )
+  );
 }

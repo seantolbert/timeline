@@ -1,6 +1,7 @@
 -- ============================================================
 -- Timeline Task Tracker — Supabase Schema (no auth)
 -- Run this in your Supabase SQL Editor (Dashboard → SQL Editor)
+-- Safe to re-run: uses IF NOT EXISTS / CREATE OR REPLACE
 -- ============================================================
 
 create extension if not exists "pgcrypto";
@@ -19,13 +20,19 @@ create table if not exists public.tasks (
   due_date    date,
   completed   boolean not null default false,
   tag         text,
+  "order"     integer not null default 0,  -- user-defined drag position
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now()
 );
 
+-- Add "order" column to existing tables (safe if already exists)
+alter table public.tasks
+  add column if not exists "order" integer not null default 0;
+
 -- ============================================================
 -- INDEXES
 -- ============================================================
+create index if not exists idx_tasks_order     on public.tasks("order");
 create index if not exists idx_tasks_status    on public.tasks(status);
 create index if not exists idx_tasks_priority  on public.tasks(priority);
 create index if not exists idx_tasks_due_date  on public.tasks(due_date);
@@ -48,7 +55,7 @@ create trigger on_tasks_updated
   for each row execute function public.handle_updated_at();
 
 -- ============================================================
--- OPEN ACCESS (no auth — anon key can read/write)
+-- OPEN ACCESS (anon key can read/write)
 -- ============================================================
 alter table public.tasks enable row level security;
 

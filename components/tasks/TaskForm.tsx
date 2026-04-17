@@ -37,6 +37,7 @@ const DEFAULT_VALUES: CreateTaskInput = {
   due_date: null,
   completed: false,
   tag: "",
+  order: 0,
 };
 
 export function TaskForm({ open, onClose, onSubmit, editTask }: TaskFormProps) {
@@ -55,6 +56,7 @@ export function TaskForm({ open, onClose, onSubmit, editTask }: TaskFormProps) {
         due_date: editTask.due_date,
         completed: editTask.completed,
         tag: editTask.tag ?? "",
+        order: editTask.order,
       });
     } else {
       setForm(DEFAULT_VALUES);

@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { getTasks, createTask, updateTask, deleteTask, toggleTaskComplete } from "../tasks";
+import {
+  getTasks,
+  createTask,
+  updateTask,
+  deleteTask,
+  toggleTaskComplete,
+  reorderTasks,
+} from "../tasks";
 import type { Task, CreateTaskInput, UpdateTaskInput } from "../types";
 
-/**
- * Central hook for task state management.
- * Provides CRUD operations and loading/error states.
- * All task list UI components use this hook.
- */
 export function useTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,9 +29,7 @@ export function useTasks() {
     }
   }, []);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  useEffect(() => { load(); }, [load]);
 
   const create = useCallback(async (input: CreateTaskInput) => {
     const task = await createTask(input);
@@ -54,14 +54,17 @@ export function useTasks() {
     return updated;
   }, []);
 
-  return {
-    tasks,
-    loading,
-    error,
-    refresh: load,
-    create,
-    update,
-    remove,
-    toggle,
-  };
+  /**
+   * Optimistically reorder: update local state immediately,
+   * then persist to Supabase in the background.
+   */
+  const reorder = useCallback((reordered: Task[]) => {
+    setTasks(reordered);
+    reorderTasks(reordered).catch(() => {
+      // Silently refetch if persist fails
+      load();
+    });
+  }, [load]);
+
+  return { tasks, loading, error, refresh: load, create, update, remove, toggle, reorder };
 }

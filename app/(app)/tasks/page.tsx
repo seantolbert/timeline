@@ -10,7 +10,7 @@ export default function TasksPage() {
         <h1 className="text-2xl font-bold tracking-tight">All Tasks</h1>
         <p className="text-sm text-muted-foreground">Every task, in one place.</p>
       </div>
-      <TaskList showFilters heading="" emptyMessage="No tasks yet. Create your first one!" />
+      <TaskList showFilters emptyMessage="No tasks yet. Create your first one!" />
     </div>
   );
 }

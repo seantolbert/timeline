@@ -65,7 +65,7 @@ export function TaskFilterBar({ filters, onChange }: TaskFiltersProps) {
 
       {/* Sort */}
       <Select
-        value={`${filters.sortBy ?? "created_at"}:${filters.sortDir ?? "desc"}`}
+        value={`${filters.sortBy ?? "order"}:${filters.sortDir ?? "asc"}`}
         onValueChange={(v) => {
           const [sortBy, sortDir] = v.split(":");
           onChange({
@@ -79,6 +79,7 @@ export function TaskFilterBar({ filters, onChange }: TaskFiltersProps) {
           <SelectValue placeholder="Sort" />
         </SelectTrigger>
         <SelectContent>
+          <SelectItem value="order:asc">Custom order ↕</SelectItem>
           <SelectItem value="created_at:desc">Newest first</SelectItem>
           <SelectItem value="created_at:asc">Oldest first</SelectItem>
           <SelectItem value="due_date:asc">Due date ↑</SelectItem>
